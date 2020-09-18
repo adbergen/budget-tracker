@@ -1,15 +1,15 @@
 let db;
 
-const request = window.indexedDB.open(budget, 1);
+const request = window.indexedDB.open("budget", 1);
+
+request.onupgradeneeded = function (event) {
+  const db = event.target.result;
+  db.createObjectStore("pending", { autoincrement: true });
+};
 
 export function useIndexedDb(databaseName, storeName, method, object) {
   return new Promise((resolve, reject) => {
     tx, store;
-
-    request.onupgradeneeded = function (e) {
-      const db = request.result;
-      db.createObjectStore(storeName, { keyPath: "_id" });
-    };
 
     request.onerror = function (e) {
       console.log("There was an error");
