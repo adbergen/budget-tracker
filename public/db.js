@@ -1,40 +1,56 @@
 let db;
 
-const request = window.indexedDB.open("budget", 1);
+const request = indexedDB.open("budget", 1);
 
 request.onupgradeneeded = function (event) {
   const db = event.target.result;
+
   db.createObjectStore("pending", { autoincrement: true });
 };
 
-export function useIndexedDb(databaseName, storeName, method, object) {
-  return new Promise((resolve, reject) => {
-    tx, store;
+request.onsuccess = function (event) {
+  db = event.target.result;
 
-    request.onerror = function (e) {
-      console.log("There was an error");
-    };
+  if (navigator.onLine) {
+    checkDatabase();
+  }
+};
 
-    request.onsuccess = function (e) {
-      db = request.result;
-      tx = db.transaction(storeName, "readwrite");
-      store = tx.objectStore(storeName);
+request.onerror = function (event) {
+  console.log("Error: ", event.target.errorCode);
+};
 
-      db.onerror = function (e) {
-        console.log("error");
-      };
-      if (method === "put") {
-        store.put(object);
-      }
-      if (method === "get") {
-        const all = store.getAll();
-        all.onsuccess = function () {
-          resolve(all.result);
-        };
-      }
-      tx.oncomplete = function () {
-        db.close();
-      };
-    };
-  });
+function saveRecord(record) {
+  const transaction = db.transaction(["pending"], "readwrite");
+  const store = transaction.objectStore("pending");
+
+  store.add(record);
 }
+
+function checkDatabase() {
+  const transaction = db.transaction(["pending"], "readwrite");
+  const store = transaction.objectStore("pending");
+  const getAll = store.getAll();
+
+  getAll.onsuccess = function () {
+    if (getAll.result.length > 0) {
+      fetch("/api/transaction/bulk", {
+        method: "POST",
+        body: JSON.stringify(getAll.result),
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then(() => {
+          const transaction = db.transaction(["pending"], "readwrite");
+          const store = transaction.objectStore("pending");
+
+          store.clear();
+        });
+    }
+  };
+}
+
+window.addEventListener("online", checkDatabase);
