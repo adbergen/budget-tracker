@@ -53,7 +53,7 @@ Using npm:
 
 ## Usage
 
-<p> This application is designed to allow a user to view, create, and track daily workouts. Multiple Exercises in a workout can be logged each day. The name, type, weight, sets, reps, distance traveled, duration of excercise, can also be logged.
+<p> This application is designed to allow a user to add or subtract funds to their transaction history with or without an internet connection
 
 <hr>
 
