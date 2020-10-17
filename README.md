@@ -16,11 +16,11 @@ This is a budget tracker application.</p>
 <div align="center"><a name="menu"></a>
   <h4>
     <a href="https://budgettrax.herokuapp.com/">
-      Heroku
+      Heroku Deployment
     </a>
     <span> | </span>
     <a href="https://github.com/adbergen/budget-tracker">
-      Github
+      Github Repository
     </a>
 
   </h4>
@@ -47,7 +47,7 @@ Using npm:
 <br>
 <br>
 
-    npm install
+    npm install && npm start
 
 <hr>
 
